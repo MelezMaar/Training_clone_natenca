@@ -22,3 +22,6 @@
 """
 
 config = "switchport trunk allowed vlan 1,3,10,20,30,100"
+vlan_pos = config.find('vlan') + 5 #Получаем позицию, с которой начинается список Vlan
+result = config[vlan_pos::].split(',') #обрезаем config до списка vlan`ов, а затем разбиваем строку по запятой
+print(result)

@@ -24,3 +24,8 @@
 """
 
 vlans = [10, 20, 30, 1, 2, 100, 10, 30, 3, 4, 10]
+unique_vlan = set(vlans) #Преообразовываем список во множество, благодаря чему избавляемся от повторений
+result = sorted(unique_vlan) #Сортируем
+#print(type(unique_vlan))
+#print(type(result)) # И внезапно, множество, после сортировки, стало списком =)
+print(result)

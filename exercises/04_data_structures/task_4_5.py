@@ -22,3 +22,10 @@
 
 command1 = "switchport trunk allowed vlan 1,2,3,5,8"
 command2 = "switchport trunk allowed vlan 1,3,8,9"
+
+vlan1 = command1[(command1.find('vlan') + 5)::].split(',')
+vlan2 = command2[(command2.find('vlan') + 5)::].split(',')
+
+result = sorted(set(vlan1) & set(vlan2)) #Если не сортировать, то элементы в списке будут в случайном порядке. Что само по себе странно.
+
+print(result)
