@@ -49,3 +49,44 @@ bin_ip = "00001010000000010000000111000011"
 Ограничение: Все задания надо выполнять используя только пройденные темы.
 
 """
+
+
+ip_template = '''
+Network:
+{0:<10} {1:<10} {2:<10} {3:<10}
+{0:08b}   {1:08b}   {2:08b}   {3:08b}
+
+Mask:
+{8:}
+{4:<10} {5:<10} {6:<10} {7:<10}
+{4:08b}   {5:08b}   {6:08b}   {7:08b}
+'''
+
+prefix = input("Введите адрес сети: ")
+#prefix = "10.11.230.13/19"
+ip = prefix[:-3]
+number_ip = ip.split('.')
+mask = prefix[-3:]
+
+number_ip[0] = int(number_ip[0])
+number_ip[1] = int(number_ip[1])
+number_ip[2] = int(number_ip[2])
+number_ip[3] = int(number_ip[3])
+# Ниже мы сначало получаем выражение ip адресса ввиде строки двоичной системы счисления
+# А затем преобразовываем ее в строку, в соответсвии маске
+number_ip_bin = '{0:08b}{1:08b}{2:08b}{3:08b}'.format(number_ip[0], number_ip[1], number_ip[2], number_ip[3])
+number_ip_bin_lan = number_ip_bin[:-(32-int(mask[1:]))] + "0" * (32-int(mask[1:]))
+# А тут мы уже получаем адрес сети
+number_ip[0] = int(number_ip_bin_lan[:-24], 2)
+number_ip[1] = int(number_ip_bin_lan[8:-16], 2)
+number_ip[2] = int(number_ip_bin_lan[16:-8], 2)
+number_ip[3] = int(number_ip_bin_lan[24:], 2)
+
+mask_bin = "1" * int(mask[1:]) + "0" * (32 - int(mask[1:]))
+number_mask = []
+number_mask.append(int(mask_bin[:-24], 2))
+number_mask.append(int(mask_bin[8:-16], 2))
+number_mask.append(int(mask_bin[16:-8], 2))
+number_mask.append(int(mask_bin[24:], 2))
+
+print(ip_template.format(number_ip[0], number_ip[1], number_ip[2], number_ip[3], number_mask[0], number_mask[1], number_mask[2], number_mask[3], mask))

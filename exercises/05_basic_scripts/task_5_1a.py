@@ -44,3 +44,12 @@ london_co = {
         "routing": True,
     },
 }
+
+
+equip = input ("Введите название устройства: ")
+equip_chr = london_co.copy() #Копируем, что бы не изменять начальный словарь
+non = {'Non': 'non'} # При не верном вводе должен добавляться словарь
+equip_chr.setdefault(equip, non) # при ошибке ввода устройства, не вываливается в ошибку, а создается новый элемент
+charac = input ("Введите параметор устройства: ")
+print(equip_chr[equip].get(charac)) 
+del equip_chr[equip] # Убираем за собой

@@ -43,3 +43,12 @@ london_co = {
         "routing": True,
     },
 }
+
+equip = input ("Введите название устройства: ").lower() #Собственно понижаем регистр сразу при вводе
+equip_chr = london_co.copy() #Копируем, что бы не изменять начальный словарь
+equip_chr.setdefault(equip, {'Non': 'non'}) # при ошибке ввода устройства, не вываливается в ошибку, а создается новый элемент
+charac_list = list(equip_chr[equip].keys()) #Получаем список ключей
+charac = input ('Введите параметор устройства (' + str(charac_list)[1:-1].replace("'", '') + '): ').lower()
+equip_chr[equip].setdefault(charac, 'Такого параметра нет')#Выдает осмысленное сообщение при неверных параметрах
+print(equip_chr[equip][charac]) 
+del equip_chr[equip] # Убираем за собой
