@@ -39,3 +39,63 @@ interface Ethernet0/3
 ...
 
 """
+from sys import argv
+conf_file = argv[1]
+result = ''
+
+with open(conf_file) as file: # Окткрываем файл
+    for conf_line in file: # просматриваем его построчно
+        if '!' in conf_line: # Если в строке есть !, то пропускаем строку
+            pass
+        else:
+            result += conf_line
+
+print(result)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

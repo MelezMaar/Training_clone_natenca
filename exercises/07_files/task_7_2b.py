@@ -17,3 +17,21 @@
 """
 
 ignore = ["duplex", "alias", "configuration"]
+
+from sys import argv
+conf_file = argv[1]
+save_file_conf = argv[2]
+result = ''
+
+with open(conf_file) as file, open(save_file_conf, "w") as file_save:
+    for conf_line in file:
+        if '!' in conf_line:
+            pass
+        else:
+            for ignore_conf in ignore:
+                if ignore_conf in conf_line:
+                    break
+            else:
+                file_save.write(conf_line)
+
+#print(result)

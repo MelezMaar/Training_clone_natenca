@@ -40,3 +40,16 @@
 Ограничение: Все задания надо выполнять используя только пройденные темы.
 
 """
+cam_table_list = []
+with open('CAM_table.txt', 'r') as file:
+    for cam_line in file:
+        cam_line = cam_line.strip()
+        if cam_line.startswith(('1', '2', '3', '4', '5', '6', '7', '8', '9', '0')):
+            #for i in range(10):
+            #    cam_line.strip().split(' ').remove('')
+            cam_table_list.append(cam_line.strip().split())
+
+for i in cam_table_list:
+    i[0] = int(i[0])         
+for element in sorted(cam_table_list):
+    print('{:<9}{:20}{}'.format(element[0], element[1], element[3]))
