@@ -43,6 +43,28 @@
 Ограничение: Все задания надо выполнять используя только пройденные темы.
 """
 
+
+def generate_trunk_config(intf_vlan_mapping, trunk_template):
+    """
+    intf_vlan_mapping - словарь с соответствием интерфейс-VLAN такого вида:
+        {'FastEthernet0/12':10,
+         'FastEthernet0/14':11,
+         'FastEthernet0/16':17}
+    trunk_template - список команд для порта в режиме trunk
+
+    Возвращает список всех портов в режиме trunk с конфигурацией на основе шаблона
+    """
+    result = []
+    for intf, vlan in intf_vlan_mapping.items():
+        result.append('interface ' + intf.strip())
+        for command in trunk_template:
+            if command.endswith('allowed vlan'):
+                vlan_str = [str(num_vlan) for num_vlan in vlan] #Формирует список вланов из строки и конвектирует его в числа
+                result.append(command.strip() + ' ' + ','.join(vlan_str))   
+            else:
+                result.append(command.strip())    
+    return result
+
 trunk_mode_template = [
     "switchport mode trunk",
     "switchport trunk native vlan 999",
@@ -60,3 +82,5 @@ trunk_config_2 = {
     "FastEthernet0/15": [111, 130],
     "FastEthernet0/14": [117],
 }
+
+#print (generate_trunk_config(trunk_config_2, trunk_mode_template))

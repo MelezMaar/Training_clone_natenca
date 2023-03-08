@@ -23,3 +23,26 @@
 
 Ограничение: Все задания надо выполнять используя только пройденные темы.
 """
+def get_int_vlan_map (config_filename):
+    
+    '''- config_filename - файл конфигурации
+     - Возвращает кортеж из двух словарей:
+     словарь портов в режиме access, где ключи номера портов,
+     а значения access VLAN (числа)
+     - словарь портов в режиме trunk, где ключи номера портов,
+     а значения список разрешенных VLAN (список чисел)
+    '''
+    port_access = {}
+    port_trunk = {}
+    with open (config_filename, 'r') as file:
+        for line_conf in file:
+            if line_conf.strip().startswith('interface'):
+                intf = line_conf.split()[1]
+            elif 'access vlan' in line_conf:
+                port_access[intf] = int(line_conf.split()[3])
+            elif 'trunk allowed vlan' in line_conf:
+                vlan_int = [int(num_vlan) for num_vlan in line_conf.split()[4].split(',')]
+                port_trunk[intf] = vlan_int
+    return port_access, port_trunk
+
+print(get_int_vlan_map('config_sw1.txt'))

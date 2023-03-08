@@ -64,3 +64,28 @@ def ignore_command(command, ignore):
         if word in command:
             ignore_status = True
     return ignore_status
+
+def convert_config_to_dict(config_filename):
+    '''
+    - onfig_filename - файл конфигурации
+    возвращает словарь:
+    * Все команды верхнего уровня (глобального режима конфигурации), будут ключами.
+    * Если у команды верхнего уровня есть подкоманды, они должны быть в значении
+    у соответствующего ключа, в виде списка (пробелы в начале строки надо удалить).
+    * Если у команды верхнего уровня нет подкоманд, то значение будет пустым списком
+    '''
+    result = {}
+    with open(config_filename, 'r') as file:
+        for line_str in file:
+            # Ниже жуткий "костыль". Использовать внутри функции переменный, которые заданы вне функции
+            # Это такое себе. Но в ТЗ нельзя передавать что либо, кроме имени файла.
+            if ignore_command(line_str, ignore) or line_str.startswith('!') or line_str == '\n':
+                pass
+            elif line_str.startswith(' ') == False:
+                key = line_str.strip()
+                result[key] = []
+            else: 
+                result[key].append(line_str.strip())
+    return result
+
+print (convert_config_to_dict('config_sw1.txt'))

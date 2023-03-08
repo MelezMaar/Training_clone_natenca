@@ -34,7 +34,7 @@
 'switchport mode access',
 'switchport access vlan 150',
 'switchport nonegotiate',
-'spanning-tree portfast',
++'spanning-tree portfast',
 'spanning-tree bpduguard enable',
 ...]
 
@@ -47,6 +47,28 @@ access_config_2 и убедиться, что в итоговом списке �
 Ограничение: Все задания надо выполнять используя только пройденные темы.
 
 """
+
+def generate_access_config(intf_vlan_mapping, access_template):
+    """
+    intf_vlan_mapping - словарь с соответствием интерфейс-VLAN такого вида:
+        {'FastEthernet0/12':10,
+         'FastEthernet0/14':11,
+         'FastEthernet0/16':17}
+    access_template - список команд для порта в режиме access
+
+    Возвращает список всех портов в режиме access с конфигурацией на основе шаблона
+    """
+    result = []
+    for intf, vlan in intf_vlan_mapping.items():
+        result.append('interface ' + intf.strip())
+        for command in access_template:
+            if command.endswith('access vlan'):
+                result.append(command.strip() + ' ' + str(vlan))   
+            else:
+                result.append(command.strip())    
+    return result 
+
+
 
 access_mode_template = [
     "switchport mode access",
@@ -65,13 +87,6 @@ access_config_2 = {
 }
 
 
-def generate_access_config(intf_vlan_mapping, access_template):
-    """
-    intf_vlan_mapping - словарь с соответствием интерфейс-VLAN такого вида:
-        {'FastEthernet0/12':10,
-         'FastEthernet0/14':11,
-         'FastEthernet0/16':17}
-    access_template - список команд для порта в режиме access
 
-    Возвращает список всех портов в режиме access с конфигурацией на основе шаблона
-    """
+#result = generate_access_config(access_config, access_mode_template)
+#print(result)
