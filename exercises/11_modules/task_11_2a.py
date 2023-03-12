@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
+from task_11_2 import create_network_map
+from draw_network_graph import draw_topology
 """
 Задание 11.2a
 
 > Для выполнения этого задания, должен быть установлен graphviz:
 > apt-get install graphviz
-
 > И модуль python для работы с graphviz:
 > pip install graphviz
 
@@ -73,6 +74,30 @@
 Ограничение: Все задания надо выполнять используя только пройденные темы.
 
 """
+def unique_network_map (topology_dict):
+    '''
+        Функция удаляет зеркальные соединения топологии
+    '''
+    result_nt_map = topology_dict.copy() #Копируем словарь
+    
+    #Если мы находим имя ключа, равное одному из значений, то значение это ключа делаем пустым
+    for key_nt_map, value_nt_map in result_nt_map.items():
+        if value_nt_map != '' and result_nt_map.get(value_nt_map) != None:
+            result_nt_map[value_nt_map] = ''
+
+    # Выводим словарь БЕЗ пустых значений       
+    return {key: value for key, value in result_nt_map.items() if value != ''}
+
+def print_dict (sh_dict):
+    '''
+        Вспомагательная функция для печати словаря
+    '''
+    i = 0
+    for key, value in sh_dict.items():
+        print(f'{i:<3}', end='--> ')
+        print(key, end='--> ')
+        print(value)
+        i += 1
 
 infiles = [
     "sh_cdp_n_sw1.txt",
@@ -80,3 +105,8 @@ infiles = [
     "sh_cdp_n_r2.txt",
     "sh_cdp_n_r3.txt",
 ]
+
+if __name__ == "__main__":
+    #print_dict(create_network_map(infiles))
+    #print_dict(unique_network_map(create_network_map(infiles)))
+    draw_topology(unique_network_map(create_network_map(infiles)))
