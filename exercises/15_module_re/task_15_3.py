@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import re
+from pprint import pprint
 """
 Задание 15.3
 
@@ -32,3 +34,23 @@ object network LOCAL_10.1.9.5
 
 Во всех правилах для ASA интерфейсы будут одинаковыми (inside,outside).
 """
+def convert_ios_nat_to_asa(nat_cisco, nat_asa):
+    result = ''
+    pattern_asa ='object network LOCAL_{0}\n host {0}\n nat (inside,outside) static interface service tcp {1} {2}\n'
+    #pattern_asa = '{0} {1} {2}'          
+    pattern_mash = re.compile(r'(?:\S+ ){6}(?P<ip_add>\d+.\d+.\d+.\d+) (?P<in_port>\d+) \S+ \S+ (?P<out_port>\d+)')
+    #pattern_mash = re.compile(r'(?:\S+ ){6}(?P<ip_add>\d+.\d+.\d+.\d+)')
+    with open(nat_cisco) as conf_cisco, open(nat_asa, 'w') as conf_asa:
+        for cisco_conf in conf_cisco:
+            mathe_conf = pattern_mash.match(cisco_conf)
+            if mathe_conf:
+                ip, inp, outp = mathe_conf.group('ip_add', 'in_port', 'out_port')
+                conf_asa.writelines(pattern_asa.format(ip, inp, outp))
+                #result += str(ip)
+                
+        
+
+if __name__ == "__main__":
+    #convert_ios_nat_to_asa(r'.\Training_clone_natenca\exercises\15_module_re\cisco_nat_config.txt', r'.\Training_clone_natenca\exercises\15_module_re\asa_nat_config.txt')
+    convert_ios_nat_to_asa(r'cisco_nat_config.txt', r'asa_nat_config.txt')
+    #print (parse_sh_ip_int_br(r'sh_ip_int_br.txt', 'r'))

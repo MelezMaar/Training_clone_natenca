@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import re
 """
 Задание 15.1
 
@@ -23,3 +24,20 @@
 а не ввод пользователя.
 
 """
+
+def get_ip_from_cfg(file_conf):
+    '''
+        - file_conf - конфигурационный файл
+        - result - список кортежей (ip , mask)
+    '''
+    result = []
+    with open(file_conf, "r") as conf_file:
+        for line_conf in conf_file:
+            match_conf = re.match(r' ip address (\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}) (\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3})', line_conf)
+            if match_conf:
+                result.append(match_conf.groups())
+    return result
+
+if __name__ == "__main__":
+    #print (get_ip_from_cfg(r'.\Training_clone_natenca\exercises\15_module_re\config_r1.txt'))
+    print (get_ip_from_cfg(r'config_r1.txt', 'r'))

@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import re
+from pprint import pprint
 """
 Задание 15.1b
 
@@ -28,3 +30,29 @@ IP-адреса, диапазоны адресов и так далее, так 
 а не ввод пользователя.
 
 """
+def get_ip_from_cfg(file_conf):
+    '''
+        - file_conf - конфигурационный файл
+        - result - список кортежей (ip , mask)
+    '''
+    result = {}
+    pattern_mash = re.compile(r"interface (?P<intf>\S+)"
+                              r"| ip address (?P<ip_add>\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}) (?P<ip_mask>\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3})")
+    
+    with open(file_conf, "r") as conf_file:
+        intfs = 'none'
+        for line_conf in conf_file:
+            match_conf = pattern_mash.match(line_conf)
+            if match_conf:
+                if match_conf.lastgroup == 'intf':
+                    #if result.get(intfs) != None and result[intfs] == []:
+                        #del result[intfs] # удаляем интерфэйсы без ip. 
+                    intfs = match_conf.group(match_conf.lastgroup)
+                    result[intfs] = []
+                else:
+                    result[intfs].append(match_conf.group('ip_add', 'ip_mask'))
+    return {key: value for key, value in result.items() if value != []}
+
+if __name__ == "__main__":
+    #pprint (get_ip_from_cfg(r'.\Training_clone_natenca\exercises\15_module_re\config_r1.txt'))
+    print (get_ip_from_cfg(r'config_r2.txt', 'r'))

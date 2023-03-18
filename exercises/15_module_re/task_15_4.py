@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import re
+from pprint import pprint
 """
 Задание 15.4
 
@@ -24,3 +26,27 @@ interface Loopback0
 
 Проверить работу функции на примере файла config_r1.txt.
 """
+def get_ints_without_description(file_conf):
+    '''
+        - file_conf - конфигурационный файл
+        - result - список 
+    '''
+    result = []
+    pattern_mash = re.compile(r"interface (?P<intf>\S+)"
+                              r"| description (?P<des>\S+)")
+    
+    with open(file_conf, "r") as conf_file:
+        for line_conf in conf_file: 
+            match_conf = pattern_mash.match(line_conf)
+            if match_conf:
+                if match_conf.lastgroup == 'intf':
+                    intfs = match_conf.group(match_conf.lastgroup)
+                    result.append(intfs)
+                else:
+                    result.remove(intfs)
+    return result
+
+if __name__ == "__main__":
+    #pprint (get_ints_without_description(r'.\Training_clone_natenca\exercises\15_module_re\config_r1.txt'))
+    print (get_ints_without_description(r'config_r1.txt', 'r'))
+
