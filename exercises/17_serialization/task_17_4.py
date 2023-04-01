@@ -42,6 +42,8 @@ C-3PO,c3po@gmail.com,16/12/2019 17:24
 """
 
 import datetime
+import csv
+from pprint import pprint
 
 
 def convert_str_to_datetime(datetime_str):
@@ -50,9 +52,50 @@ def convert_str_to_datetime(datetime_str):
     """
     return datetime.datetime.strptime(datetime_str, "%d/%m/%Y %H:%M")
 
-
 def convert_datetime_to_str(datetime_obj):
     """
     Конвертирует строку с датой в формате 11/10/2019 14:05 в объект datetime.
     """
     return datetime.datetime.strftime(datetime_obj, "%d/%m/%Y %H:%M")
+
+def write_last_log_to_csv(source_log, output):
+    #Читаем лог и сохраняем его в список из словарей
+    with open(source_log) as file:
+        log_iter = csv.DictReader(file)
+        list_user = []
+        for dir_user in log_iter:
+            list_user.append(dir_user)
+
+    # Создаем итоговый список словарей с нужной нам структурой, иначе ошибка
+    output_list = [{'Email': 'NON', 'Last Changed': 'NON', 'Name': 'NON'}]
+
+    for user_dir in list_user:
+        name_chek = False # Флаг. проверяющий был ли email раньше в списке
+        #Данный цикл проверяет, есть ли email из лога, в итоговом списке, если нет, добовляет его
+        for out_user_dir in output_list:
+            if out_user_dir['Email'] == user_dir['Email']:
+                # Если email уже есть в итоговом списке, то сравниваются даты
+                if convert_str_to_datetime(user_dir['Last Changed']) > convert_str_to_datetime(out_user_dir['Last Changed']):
+                    i = output_list.index(out_user_dir) # Определяется индекс
+                    output_list[i] = user_dir # обновляется итоговый список
+                name_chek = True # email уже был в списке, тоак что его не добовляем
+        # Добавляем новый email в итоговый список        
+        if name_chek == False:
+            output_list.append(user_dir)
+    # Удаляем начальную структуру        
+    output_list.remove({'Email': 'NON', 'Last Changed': 'NON', 'Name': 'NON'})
+
+    # Записываем результат в файл
+    with open(output, 'w') as file_read:
+        writer = csv.DictWriter(
+            file_read, fieldnames=list(output_list[0].keys()), quoting=csv.QUOTE_NONNUMERIC, lineterminator='\n')
+        writer.writeheader()
+        for read_data in output_list:
+            writer.writerow(read_data)
+
+    #pprint(output_list)
+
+
+
+if __name__ == "__main__":
+    write_last_log_to_csv('mail_log.csv', 'output_mail.csv')

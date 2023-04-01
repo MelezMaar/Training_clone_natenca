@@ -43,3 +43,37 @@
 > pip install graphviz
 
 """
+
+import yaml
+from pprint import pprint
+from draw_network_graph import draw_topology
+
+def unique_network_map (topology_dict):
+    '''
+        Функция удаляет зеркальные соединения топологии
+    '''
+    result_nt_map = topology_dict.copy() #Копируем словарь
+    
+    #Если мы находим имя ключа, равное одному из значений, то значение это ключа делаем пустым
+    for key_nt_map, value_nt_map in result_nt_map.items():
+        if value_nt_map != '' and result_nt_map.get(value_nt_map) != None:
+            result_nt_map[value_nt_map] = ''
+
+    # Выводим словарь БЕЗ пустых значений       
+    return {key: value for key, value in result_nt_map.items() if value != ''}
+
+def transform_topology(file_topolog):
+
+    with open(file_topolog) as file:
+        topolog = yaml.safe_load(file)
+        
+    result = {(device_name, local_intf_key): (device_id_key, port_id) 
+              for device_name, local_intf in topolog.items() 
+              for local_intf_key, device_id in local_intf.items()
+              for device_id_key, port_id in device_id.items()}
+    
+    return unique_network_map(result)
+    
+if __name__ == "__main__":
+    #pprint(transform_topology('topology.yaml'))
+    draw_topology(transform_topology('topology.yaml'))

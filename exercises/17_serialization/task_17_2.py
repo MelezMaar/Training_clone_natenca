@@ -44,8 +44,36 @@
 """
 
 import glob
-
-sh_version_files = glob.glob("sh_vers*")
-# print(sh_version_files)
+import re
+import csv
+from pprint import pprint
 
 headers = ["hostname", "ios", "image", "uptime"]
+
+def parse_sh_version (parse_line):
+    pattern_version = re.compile(r'Cisco IOS .+, Version (?P<ios>\S+),.+ROM:.+'
+                                 r'router uptime is (?P<uptime>(?:\S+ ){5}\S+).+'
+                                 r'System image file is "(?P<image>\S+)".+', re.DOTALL)
+                               
+    match_version = pattern_version.search(parse_line)
+    return(match_version.group('ios', 'image', 'uptime'))
+
+def write_inventory_to_csv(invent_list, output):
+    pattern_name_device = re.compile(r'sh_version_(\S+).txt')
+    result = [headers]
+    for invent_file in invent_list:
+        name_device = pattern_name_device.match(invent_file).group(1)
+        with open(invent_file) as file:
+            invent_device = [name_device]
+            invent_device += list(parse_sh_version(file.read()))
+            result.append(invent_device)
+    with open(output, 'w') as f:
+        writer = csv.writer(f, lineterminator='\n', quoting=csv.QUOTE_NONNUMERIC) 
+        writer.writerows(result)        
+    
+sh_version_files = glob.glob("sh_vers*")
+#print(sh_version_files)
+
+if __name__ == "__main__":
+    write_inventory_to_csv(sh_version_files, 'routers_inventory.csv')
+        

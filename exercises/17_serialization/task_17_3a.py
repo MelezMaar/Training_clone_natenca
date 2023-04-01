@@ -36,3 +36,26 @@
 в файл topology.yaml. Он понадобится в следующем задании.
 
 """
+import glob
+import re
+import yaml
+import json
+from pprint import pprint
+from task_17_3 import parse_sh_cdp_neighbors
+
+sh_version_files = glob.glob("sh_cdp_n_*")
+
+def generate_topology_from_cdp (list_of_files, save_to_filename=None):
+    result = {}
+    for line_of_file in list_of_files:
+        with open(line_of_file) as f:
+            result.update(parse_sh_cdp_neighbors(f.read()))         
+
+        if save_to_filename != None:
+                with open(save_to_filename, 'w') as file_cdp:
+                        yaml.dump(result, file_cdp)     
+
+    return result    
+
+if __name__ == "__main__":
+    generate_topology_from_cdp(sh_version_files, "topology.yaml")
