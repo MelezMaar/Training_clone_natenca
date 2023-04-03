@@ -49,9 +49,48 @@ In [12]: pprint(result)
                         'R1(config)#'})
 
 """
+import re
+import yaml
+from pprint import pprint
+from netmiko import (
+    ConnectHandler,
+    NetmikoTimeoutException,
+    NetmikoAuthenticationException,
+)
 
-# списки команд с ошибками и без:
-commands_with_errors = ["logging 0255.255.1", "logging", "a"]
-correct_commands = ["logging buffered 20010", "ip http server"]
+def send_config_commands(device, config_commands, log=True):
+    pattern_error = re.compile(r'(?:Invalid input detected)|(?:Incomplete command)|(?:Ambiguous command)')
+    good_comands = {}
+    bed_commands = {}
+    try:
+        if log == True:
+            print(f"Подключаюсь к {device['host']}...")
+        with ConnectHandler(**device) as ssh_session:
+            ssh_session.enable()
+            for command in config_commands:                
+                  result = ssh_session.send_config_set(command)
+                  match_error = pattern_error.search(result)
+                  if match_error:
+                      print(f'''Команда "{command}" выполнилась с ошибкой "{match_error.group()}." на устройстве {device['host']}''')
+                      bed_commands[command] = result
+                      chose = input('Продолжать выполнять команды? [y]/n:')
+                      if chose == 'n':
+                          break
+                  else:
+                      good_comands[command] = result        
+        return good_comands, bed_commands
+    except (NetmikoAuthenticationException, NetmikoTimeoutException) as error:
+        print(error)    
 
-commands = commands_with_errors + correct_commands
+
+if __name__ == "__main__":
+    # списки команд с ошибками и без:
+    commands_with_errors = ["logging 0255.255.1", "logging", "a"]
+    correct_commands = ["logging buffered 20010", "ip http server"]
+    commands = commands_with_errors + correct_commands
+    #with open("devices.yaml") as f:
+    with open(r"C:\Users\user\Documents\Python\Training_Project\Training_clone_natenca\exercises\18_ssh_telnet\devices.yaml") as f:
+        devices = yaml.safe_load(f)
+
+    for dev in devices:
+        pprint(send_config_commands(dev, commands))

@@ -47,6 +47,46 @@ In [16]: send_commands(r1, config=commands)
 Out[16]: 'config term\nEnter configuration commands, one per line.  End with CNTL/Z.\nR1(config)#username user5 password pass5\nR1(config)#username user6 password pass6\nR1(config)#end\nR1#'
 
 """
+import re
+import yaml
+from task_18_1 import send_show_command
+from task_18_2 import send_config_commands
+from pprint import pprint
+from netmiko import (
+    ConnectHandler,
+    NetmikoTimeoutException,
+    NetmikoAuthenticationException,
+)
 
-commands = ["logging 10.255.255.1", "logging buffered 20010", "no logging console"]
-command = "sh ip int br"
+'''
+* device - словарь с параметрами подключения к одному устройству
+* show - одна команда show (строка)
+* config - список с командами, которые надо выполнить в конфигурационном режиме
+'''
+
+def send_commands(device, *, show = None , config = None):
+    try:
+        if show != None and config == None:
+            result = send_show_command(device, show)
+            return result
+        elif show == None and config != None:
+            result = send_config_commands(device, config)
+            return result
+        else:
+            raise ValueError("Возможен только один ключевой аргумент")
+    except (TypeError):
+        print ('Что то пошло не так')
+    except (AttributeError):
+        print('Неверное значение')    
+    #except (ValueError):
+        #print(ValueError)     
+
+if __name__ == "__main__":
+    commands = ["logging 10.255.255.1", "logging buffered 20010", "no logging console"]
+    command = "sh ip int br"
+    #with open("devices.yaml") as f:
+    with open(r"C:\Users\user\Documents\Python\Training_Project\Training_clone_natenca\exercises\18_ssh_telnet\devices.yaml") as f:
+        devices = yaml.safe_load(f)
+
+    for dev in devices:
+        print(send_commands(dev, show=command, config=commands))
